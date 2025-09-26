@@ -1,0 +1,49 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Chamar os arquivos externos -->
+    <link rel="stylesheet" type="text/css" href="css/listagem_venda.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+</head>
+
+<header>
+    <h1 class="bungee-regular">LISTA DE VENDAS</h1>    
+</header>
+    <div class="btn-container">
+        <a href="/" type="submit" id="botao-inicial"><button class="btn bungee-regular">Tela inicial</button></a>
+        <a href="/cadastroVenda" type="submit" id="cadastroProduto"><button class="btn bungee-regular">Cadastro de Venda</button></a>
+    </div> 
+
+    <table class="topo-tabela">
+         <thead>
+            <tr class="topo-linha montserrat-font">
+                <th>Data da Venda</th>
+                <th>Produto</th>
+                <th>Valor da venda (Bruto) </th>
+                <th>Quantidade</th>             
+                <th>Total de Pagamento</th>
+                <th>Forma de Pagamento</th>
+                <th>Opções</th>
+            </tr>
+        </thead>   
+        <tbody class="open-sans-font">
+            {{#each posts}}
+                <tr>
+                    <td>{{data_venda}}</td>
+                    <td>{{#if tbl_produto}}{{tbl_produto.descricao_produto}}{{else}}Produto não encontrado{{/if}}</td>
+                    <td>{{tbl_produto.valor_bruto_venda_produto}}</td>
+                    <td>{{quantidade_venda_produto}}</td>
+                    <td>{{total_pago_venda}}</td>
+                    <td>{{forma_pag_venda}}</td>
+                    <td class="opcao"><a href="/deletarVenda/{{pk_venda}}" id="excluir"><button class="botao-excluir"><i class="fa-solid fa-trash-can"></i></button></a></td>
+                </tr>
+            {{/each}}            
+        </tbody>
+    </table>
+    
+    
+<script src="https://kit.fontawesome.com/efb8d7431f.js" crossorigin="anonymous"></script>

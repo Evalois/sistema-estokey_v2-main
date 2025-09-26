@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estoque e Vendas</title>
+  <style>
+    :root {
+      --primary-color: #1a5276;
+      --secondary-color: #f7a73f;
+      --background-color: #eef2f5;
+      --card-background: #ffffff;
+      --text-color-dark: #333;
+      --text-color-light: #555;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background-color);
+      margin: 0;
+      padding: 0;
+      color: var(--text-color-dark);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin: 0;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .header-buttons button {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: 600;
+      transition: background 0.3s;
+      white-space: nowrap;
+    }
+
+    .header-buttons button:hover {
+      background: #2471a3;
+    }
+
+    .kpi-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .kpi-card {
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kpi-card h3 {
+      color: var(--text-color-light);
+      margin: 0 0 10px 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 0;
+    }
+
+    /* Layout específico para 4 gráficos na linha superior */
+    .charts-top-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      min-height: 300px;
+    }
+
+    /* Layout específico para 3 gráficos na linha inferior */
+    .charts-bottom-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      min-height: 350px;
+    }
+
+    .chart-container, .panel-container {
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      min-height: 90%;
+    }
+
+    .chart-container h2, .panel-container h2 {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      position: relative;
+      min-height: 200px;
+    }
+
+    .chart-wrapper canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .alerts-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #alertas-table-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 250px;
+    }
+
+    .alerts-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .alerts-table th, .alerts-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .alerts-table th {
+      background: #f8f9fa;
+      color: var(--text-color-light);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .previsao-card {
+      margin-top: 15px;
+      padding: 15px;
+      background: linear-gradient(135deg, #1a5276, #2471a3);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    #previsaoFormUnificado {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    #previsaoFormUnificado label {
+      grid-column: 1 / -1;
+      font-weight: 500;
+      margin-bottom: -5px;
+    }
+
+    #previsaoFormUnificado select,
+    #previsaoFormUnificado input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    #previsaoFormUnificado button {
+      grid-column: 1 / -1;
+      padding: 10px;
+      background: var(--secondary-color);
+      color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    #previsaoFormUnificado button:hover {
+      background: #f39c12;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1200px) {
+      .charts-top-row {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+      }
+      
+      .charts-bottom-row {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, auto);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 15px;
+        gap: 15px;
+      }
+      
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .header-buttons {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      
+      .kpi-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .charts-top-row,
+      .charts-bottom-row {
+        grid-template-columns: 1fr;
+      }
+      
+      #previsaoFormUnificado {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 10px;
+      }
+      
+      .chart-container, .panel-container {
+        padding: 10px;
+      }
+      
+      .kpi-card {
+        padding: 15px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="main-content">
+
+  <!-- Título + Botões -->
+  <div class="header-row">
+    <h1>Análise de Estoque e Vendas</h1>
+    <div class="header-buttons">
+      <button onclick="generateReport()">Baixar Relatório</button>
+      <a href="/"><button>Voltar</button></a>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-container">
+    <div class="kpi-card"><h3>Total de Vendas</h3><p id="kpiTotalVendas" class="kpi-value">...</p></div>
+    <div class="kpi-card"><h3>Total de Produtos</h3><p id="kpiTotalProdutos" class="kpi-value">...</p></div>
+    <div class="kpi-card"><h3>Total em Estoque</h3><p id="kpiTotalEstoque" class="kpi-value">...</p></div>
+  </div>
+
+  <!-- Linha superior com 4 gráficos -->
+  <div class="charts-top-row">
+    <div class="chart-container">
+      <h2>Vendas por Categoria</h2>
+      <div class="chart-wrapper">
+        <canvas id="vendasPorCategoriaChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Vendas Mensais</h2>
+      <div class="chart-wrapper">
+        <canvas id="vendasPorMesChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Estoque por Categoria</h2>
+      <div class="chart-wrapper">
+        <canvas id="estoquePorCategoriaChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Produtos com Menor Venda</h2>
+      <div class="chart-wrapper">
+        <canvas id="produtosMenorVendaChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Linha inferior com 3 painéis -->
+  <div class="charts-bottom-row">
+    <div class="chart-container">
+      <h2>Vendas por Forma de Pagamento</h2>
+      <div class="chart-wrapper">
+        <canvas id="formasPagamentoChart"></canvas>
+      </div>
+    </div>
+    <div class="panel-container">
+      <h2>Previsão de Demanda</h2>
+      <form id="previsaoFormUnificado">
+        <label for="categoriaSelect">Categoria:</label>
+        <select id="categoriaSelect" required><option value="">Selecione...</option></select>
+        <label for="produtoSelect">Produto (opcional):</label>
+        <select id="produtoSelect"><option value="">Todos da categoria</option></select>
+        <label for="diasPrevisao">Dias para prever:</label>
+        <input type="number" id="diasPrevisao" required min="1" value="30">
+        <button type="submit">Prever</button>
+      </form>
+      <div id="previsaoCard" class="previsao-card">
+        <h3>Resultado da Previsão</h3>
+        <p id="previsaoUnificadaResultado">Nenhum cálculo realizado ainda.</p>
+      </div>
+    </div>
+    <div class="panel-container alerts-container">
+      <h2>Alertas e Sugestões</h2>
+      <div id="alertas-table-wrapper">
+        <table class="alerts-table">
+          <thead><tr><th>Tipo</th><th>Descrição</th></tr></thead>
+          <tbody id="alertas-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+async function fetchDashboardData() {
+  try {
+    const response = await fetch('/api/dashboard-data');
+    return await response.json();
+  } catch (error) {
+    console.error('Erro API:', error);
+    return null;
+  }
+}
+
+async function renderCharts() {
+  const data = await fetchDashboardData();
+  if (!data) return;
+
+  // KPIs
+  document.getElementById('kpiTotalVendas').innerText = `R$ ${data.kpis.totalVendas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  document.getElementById('kpiTotalProdutos').innerText = data.kpis.totalProdutos;
+  document.getElementById('kpiTotalEstoque').innerText = data.kpis.totalEstoque;
+
+  const currencyFormatter = v => `R$ ${v.toLocaleString('pt-BR')}`;
+
+  // Vendas por Categoria
+  if (data.vendasPorCategoria?.length) {
+    new Chart(document.getElementById('vendasPorCategoriaChart'), {
+      type: 'bar',
+      data: {
+        labels: data.vendasPorCategoria.map(i => i.categoria_produto),
+        datasets: [{ 
+          label: 'Total de Vendas (R$)', 
+          data: data.vendasPorCategoria.map(i => i.totalVendas),
+          backgroundColor: 'rgba(54,162,235,0.6)' 
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        scales: { 
+          y: { 
+            beginAtZero: true, 
+            ticks: { callback: currencyFormatter } 
+          } 
+        } 
+      }
+    });
+  }
+
+  // Vendas Mensais
+  if (data.vendasPorMes?.length) {
+    new Chart(document.getElementById('vendasPorMesChart'), {
+      type: 'line',
+      data: {
+        labels: data.vendasPorMes.map(i => i.mes),
+        datasets: [{ 
+          label: 'Total de Vendas (R$)', 
+          data: data.vendasPorMes.map(i => i.totalVendas),
+          borderColor: 'rgba(75,192,192,1)', 
+          backgroundColor: 'rgba(75,192,192,0.1)',
+          tension: 0.2, 
+          fill: true 
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        scales: { 
+          y: { 
+            beginAtZero: true, 
+            ticks: { callback: currencyFormatter } 
+          } 
+        } 
+      }
+    });
+  }
+
+  // Estoque por Categoria
+  if (data.estoquePorCategoria?.length) {
+    new Chart(document.getElementById('estoquePorCategoriaChart'), {
+      type: 'doughnut',
+      data: {
+        labels: data.estoquePorCategoria.map(i => i.categoria_produto),
+        datasets: [{ 
+          data: data.estoquePorCategoria.map(i => i.quantidadeEmEstoque),
+          backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40'] 
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: { 
+          legend: { 
+            position: 'bottom' 
+          } 
+        } 
+      }
+    });
+  }
+
+  // Produtos com Menor Venda
+  if (data.produtosMenorVenda?.length) {
+    const labels = data.produtosMenorVenda.map(i => {
+      const p = i.descricao_produto.split(' ');
+      return p.slice(0, 3).join(' ') + (p.length > 3 ? '...' : '');
+    });
+    new Chart(document.getElementById('produtosMenorVendaChart'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{ 
+          label: 'Total Vendido', 
+          data: data.produtosMenorVenda.map(i => i.totalVendido),
+          backgroundColor: 'rgba(255,99,132,0.6)' 
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        indexAxis: 'y', 
+        scales: { 
+          x: { 
+            beginAtZero: true 
+          } 
+        } 
+      }
+    });
+  }
+
+  // Vendas por Forma de Pagamento
+  if (data.formasPagamento?.length) {
+    new Chart(document.getElementById('formasPagamentoChart'), {
+      type: 'polarArea',
+      data: {
+        labels: data.formasPagamento.map(i => i.forma_pag_venda),
+        datasets: [{
+          data: data.formasPagamento.map(i => i.totalVendas),
+          backgroundColor: ['#36A2EB','#FFCE56','#FF6384','#4BC0C0','#9966FF']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+
+  // Alertas
+  const tbody = document.getElementById('alertas-table-body');
+  tbody.innerHTML = '';
+  (data.alertas || []).forEach(a => {
+    const row = tbody.insertRow(); 
+    row.className = 'alert-item queda';
+    row.insertCell(0).innerText = 'Queda de Vendas'; 
+    row.insertCell(1).innerText = a.descricao;
+  });
+  (data.sugestoesReposicao || []).forEach(s => {
+    const row = tbody.insertRow(); 
+    row.className = 'alert-item reposicao';
+    row.insertCell(0).innerText = 'Reposição'; 
+    row.insertCell(1).innerText = s.descricao;
+  });
+}
+
+// Categorias e Previsão
+async function carregarCategorias() {
+  try {
+    const resp = await fetch('/api/categorias');
+    const categorias = await resp.json();
+    const select = document.getElementById('categoriaSelect');
+    categorias.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat; 
+      opt.textContent = cat;
+      select.appendChild(opt);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar categorias:', error);
+  }
+}
+
+document.getElementById('categoriaSelect').addEventListener('change', async e => {
+  const categoria = e.target.value;
+  const select = document.getElementById('produtoSelect');
+  select.innerHTML = '<option value="">Todos da categoria</option>';
+  
+  if (categoria) {
+    try {
+      const resp = await fetch(`/api/produtos-por-categoria/${categoria}`);
+      const produtos = await resp.json();
+      produtos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.pk_produto; 
+        opt.textContent = p.descricao_produto;
+        select.appendChild(opt);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+    }
+  }
+});
+
+document.getElementById('previsaoFormUnificado').addEventListener('submit', async e => {
+  e.preventDefault();
+  const categoria = document.getElementById('categoriaSelect').value;
+  const produto = document.getElementById('produtoSelect').value;
+  const dias = document.getElementById('diasPrevisao').value;
+  const resultado = document.getElementById('previsaoUnificadaResultado');
+  resultado.innerText = 'Calculando...';
+  
+  try {
+    let url = produto ? `/api/previsao/${produto}/${dias}` : `/api/previsao-categoria/${categoria}/${dias}`;
+    const resp = await fetch(url);
+    const res = await resp.json();
+    
+    if (res.error) { 
+      resultado.innerText = `Erro: ${res.error}`; 
+    } else if (produto) { 
+      resultado.innerText = `Previsão para o produto: ${res.linear} (Moderado), ${res.neural} (Agressivo) unidades em ${res.dias} dias.`; 
+    } else { 
+      resultado.innerText = `Previsão para categoria ${res.categoria}: ${res.neural} unidades (Recomendação Alta) em ${res.dias} dias.`; 
+    }
+  } catch (error) { 
+    resultado.innerText = 'Erro na previsão. Tente novamente.'; 
+    console.error('Erro na previsão:', error);
+  }
+});
+
+// ----------- PDF -------------
+function generateReport() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  let y = 20;
+
+  // Título
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('Relatório Executivo - Estoque e Vendas', 105, y, { align: 'center' });
+  y += 15;
+
+  // KPIs
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Indicadores-Chave (KPIs)', 10, y);
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+
+  const kpis = [
+    { label: 'Total de Vendas', id: 'kpiTotalVendas' },
+    { label: 'Total de Produtos', id: 'kpiTotalProdutos' },
+    { label: 'Total em Estoque', id: 'kpiTotalEstoque' }
+  ];
+  kpis.forEach(kpi => {
+    const value = document.getElementById(kpi.id)?.innerText || 'N/A';
+    doc.text(`${kpi.label}: ${value}`, 12, y);
+    y += 6;
+  });
+
+  y += 10;
+
+  // Gráficos em grade 3x2 com proporção real
+  const charts = [
+    { id: 'vendasPorCategoriaChart', title: 'Vendas por Categoria' },
+    { id: 'vendasPorMesChart', title: 'Vendas Mensais' },
+    { id: 'estoquePorCategoriaChart', title: 'Estoque por Categoria' },
+    { id: 'produtosMenorVendaChart', title: 'Menor Venda' },
+    { id: 'formasPagamentoChart', title: 'Formas de Pagamento' }
+  ];
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Gráficos do Dashboard', 10, y);
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+
+  let x = 10;
+  let count = 0;
+  let maxHeight = 0;
+
+  charts.forEach(chart => {
+    const canvas = document.getElementById(chart.id);
+    if (canvas) {
+      // Cria um canvas temporário com fundo branco
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      // Aplica fundo branco
+      tempCtx.fillStyle = '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Copia o conteúdo do canvas original
+      tempCtx.drawImage(canvas, 0, 0);
+
+      // Gera imagem JPEG do canvas com fundo branco
+      const imgData = tempCanvas.toDataURL('image/jpeg');
+      const aspectRatio = canvas.width / canvas.height;
+      const chartWidth = 55;
+      const chartHeight = chartWidth / aspectRatio;
+
+      doc.setFontSize(10);
+      doc.text(chart.title, x, y);
+      doc.addImage(imgData, 'JPEG', x, y + 2, chartWidth, chartHeight);
+      maxHeight = Math.max(maxHeight, chartHeight);
+      x += chartWidth + 10;
+      count++;
+
+      if (count % 3 === 0) {
+        x = 10;
+        y += maxHeight + 12;
+        maxHeight = 0;
+      }
+    }
+  });
+
+  y += maxHeight + 15;
+  if (y > 250) {
+    doc.addPage();
+    y = 20;
+  }
+
+  // Tabela de Alertas com bordas
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('Alertas e Sugestões', 10, y);
+  y += 8;
+
+  const rows = document.querySelectorAll('#alertas-table-body tr');
+  const colWidths = [40, 120, 30];
+  const startX = 10;
+
+  // Cabeçalho da tabela
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(230, 230, 230);
+  doc.rect(startX, y, colWidths[0], 8, 'F');
+  doc.rect(startX + colWidths[0], y, colWidths[1], 8, 'F');
+  doc.rect(startX + colWidths[0] + colWidths[1], y, colWidths[2], 8, 'F');
+  doc.text('Tipo', startX + 2, y + 5);
+  doc.text('Descrição', startX + colWidths[0] + 2, y + 5);
+  doc.text('Nível', startX + colWidths[0] + colWidths[1] + 2, y + 5);
+  y += 9;
+
+  doc.setFont('helvetica', 'normal');
+
+  rows.forEach(row => {
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+    const tipo = row.cells[0]?.innerText || '';
+    const desc = row.cells[1]?.innerText || '';
+    const nivel = row.cells[2]?.querySelector('span')?.innerText || '';
+
+    doc.rect(startX, y, colWidths[0], 8);
+    doc.rect(startX + colWidths[0], y, colWidths[1], 8);
+    doc.rect(startX + colWidths[0] + colWidths[1], y, colWidths[2], 8);
+
+    doc.text(tipo, startX + 2, y + 5);
+    doc.text(desc, startX + colWidths[0] + 2, y + 5, { maxWidth: colWidths[1] - 4 });
+    doc.text(nivel, startX + colWidths[0] + colWidths[1] + 2, y + 5);
+    y += 9;
+  });
+
+  // Rodapé
+  doc.setFontSize(9);
+  doc.setTextColor(150);
+  doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 10, 290);
+
+  doc.save('relatorio-estokey.pdf');
+}
+
+document.addEventListener('DOMContentLoaded', () => { 
+  renderCharts(); 
+  carregarCategorias(); 
+});
+</script>
+</body>
+</html>

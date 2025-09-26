@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTOKEY - Cadastro de Venda</title>
+
+    <!-- Chamar os arquivos externos -->
+    <link rel="stylesheet" type="text/css" href="css/formulario_venda.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="btn-container">
+        <a href="/"><button class="btn bungee-regular">Tela inicial</button></a>
+        <a href="/consultaVenda"><button class="btn bungee-regular">Consulta Vendas</button></a>
+    </div> 
+
+    <div class="box">
+    <form action="/tbl_venda" method="POST">
+            <h1 class="bungee-regular">Cadastro de Venda</h1>
+
+            <div class="inputBox">
+                <label for="descProduto" class="labelInput montserrat-font">Produto:</label>
+                <input type="text" id="descProduto" class="inputUser open-sans-font" name="descProduto" list="produtos" placeholder="Digite o nome do produto" required autocomplete="off">
+                <datalist id="produtos"></datalist>
+            </div>
+            <br>
+            <div class="inputBox">
+                <label for="valVendaProduto" class="labelInput montserrat-font">Valor de Venda:</label>
+                <input type="text" id="valVendaProduto" class="inputUser open-sans-font" name="valVendaProduto" step="0.01" readonly>
+            </div>
+            <br>
+            <div class="inputBox">
+                <label for="qntVendaProduto" class="labelInput montserrat-font">Quantidade:</label>
+                <input type="number" id="qntVendaProduto" class="inputUser open-sans-font" name="qntVendaProduto" required autocomplete="off">
+            </div>
+            <br>
+            <div class="inputBox">
+                <label for="totalPedidoVenda" class="labelInput montserrat-font">Total do Pedido:</label>
+                <input type="number" id="totalPedidoVenda" class="inputUser open-sans-font" name="totalPedidoVenda" step="0.01" readonly>
+            </div>
+            <br>
+            <div class="inputBox">
+                <label for="descontoVenda" class="labelInput montserrat-font">Desconto:</label>
+                <input type="number" id="descontoVenda" class="inputUser open-sans-font" name="descontoVenda" step="0.01" autocomplete="off">
+            </div>
+            <br>
+            <div class="inputBox">
+                <label for="totalPagoVenda" class="labelInput montserrat-font">Total Pago:</label>
+                <input type="number" id="totalPagoVenda" class="inputUser open-sans-font" name="totalPagoVenda" step="0.01" readonly>
+            </div>
+            <br>
+            <div class="inputBox montserrat-font">
+                <label for="formaPagVenda">Forma de Pagamento:</label>
+                <select id="formaPagVenda" name="formaPagVenda" class="inputSelect open-sans-font" required>
+                    <option value="CARTÃO">CARTÃO</option>
+                    <option value="DINHEIRO">DINHEIRO</option>
+                    <option value="PIX">PIX</option>
+                </select>
+            </div>
+            <br>
+            <div class="btn-container">
+                <button class="btn bungee-regular" type="submit">Salvar Venda</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Script para preencher automaticamente os campos -->
+    <script>
+        function calcularTotal() {
+            let valorVenda = parseFloat(document.getElementById("valVendaProduto").value) || 0;
+            let qntVenda = parseFloat(document.getElementById("qntVendaProduto").value) || 0;
+            let desconto = parseFloat(document.getElementById("descontoVenda").value) || 0;
+
+            let totalSemDesconto = valorVenda * qntVenda;
+            let totalComDesconto = totalSemDesconto - desconto;
+
+            document.getElementById("totalPedidoVenda").value = totalSemDesconto.toFixed(2);
+            document.getElementById("totalPagoVenda").value = totalComDesconto.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("qntVendaProduto").addEventListener("input", calcularTotal);
+            document.getElementById("descontoVenda").addEventListener("input", calcularTotal);
+        });
+
+        // Preenchimento automático do preço ao selecionar um produto
+        document.getElementById('descProduto').addEventListener('input', function() {
+            const termoBusca = this.value;
+            if (termoBusca.length >= 2) {
+                fetch(`/buscar-produto?q=${encodeURIComponent(termoBusca)}`)
+                    .then(response => response.json())
+                    .then(produtos => {
+                        const listaProdutos = document.getElementById('produtos');
+                        listaProdutos.innerHTML = ''; 
+
+                        produtos.forEach(produto => {
+                            const option = document.createElement('option');
+                            option.value = produto.descricao_produto;
+                            listaProdutos.appendChild(option);
+                        });
+
+                        // Se um único produto for encontrado, preencher o preço automaticamente
+                        if (produtos.length === 1) {
+                            document.getElementById("valVendaProduto").value = produtos[0].valor_bruto_venda_produto;
+                            calcularTotal();
+                        }
+                    })
+                    .catch(error => console.error('Erro ao buscar produtos:', error));
+            }
+        });
+
+        // Atualizar o valor de venda ao confirmar um produto
+        document.getElementById('descProduto').addEventListener('change', function() {
+            const produtoSelecionado = this.value;
+            fetch(`/buscar-produto?q=${encodeURIComponent(produtoSelecionado)}`)
+                .then(response => response.json())
+                .then(produtos => {
+                    if (produtos.length === 1) {
+                        document.getElementById("valVendaProduto").value = produtos[0].valor_bruto_venda_produto;
+                        calcularTotal();
+                    }
+                })
+                .catch(error => console.error('Erro ao buscar preço do produto:', error));
+        });
+    </script>
+</body>
+</html>

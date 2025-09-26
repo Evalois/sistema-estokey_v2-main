@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTOKEY - Cadastro de produtos</title>
+
+    <!-- Chamar os arquivos externos -->
+    <link rel="stylesheet" type="text/css" href="css/formulario_produto.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main>
+        <div class="btn-container">
+            <a href="/" type="submit"><button class="btn bungee-regular">Tela inicial</button></a>
+            <a href="/consultaProduto" type="submit"><button class="btn bungee-regular">Consulta de Produtos</button></a>
+        </div>
+        <div class="box">
+            <form action="tbl_produto" method="post">
+                <div class="formulario">
+
+                    <h1 class="bungee-regular">Cadastro de Produtos</h1>
+                    <br>
+                    <div class="inputBox">
+                        <label for="descricao" class="labelInput montserrat-font">Descrição do Produto</label>
+                        <input type="text" name="descProduto" id="descricao" class="inputUser open-sans-font" required autocomplete="off">
+                    </div>
+                    <br><br>
+                    <div class="inputBox">
+                        <label for="categoria" class="labelInput montserrat-font">Categoria</label>
+                        <input type="text" name="catProduto" id="categoria" class="inputUser open-sans-font" required autocomplete="off">
+                    </div>     
+                    <br><br>
+                    <div class="inputBox">
+                        <label for="valorCompra" class="labelInput montserrat-font">Valor de Compra</label>
+                        <input type="text" name="valorCompraProduto" id="valorCompra" class="inputUser open-sans-font" required autocomplete="off">
+                    </div> 
+                    <br><br>
+                    <div class="inputBox">
+                        <label for="valorBruto" class="labelInput montserrat-font">Valor de Venda (Bruto)</label>
+                        <input type="text" name="valorBrutoVendaProduto" id="valorBruto" class="inputUser open-sans-font" required autocomplete="off">
+                    </div>
+                    <br><br>
+                    <div class="inputBox">
+                        <label for="qtdeProduto" class="labelInput montserrat-font">Quantidade</label>
+                        <input type="text" name="quantidadeProduto" id="qtdeProduto" class="inputUser open-sans-font" required autocomplete="off">
+                    </div>
+                    <br><br>
+                    
+                    <input type="submit" name="submit" class="btn bungee-regular" value="Cadastrar Produto">   
+                    
+                </div>              
+            </form>
+        </div>
+        
+    </main>
+
+    
+    </body>
+</html>

@@ -1,0 +1,91 @@
+body{
+    background: rgb(250, 248, 248);
+}
+
+.formVenda {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.btn {
+    position: relative;
+    background: none;
+    color: #E0E0E0;
+    border: 0.1em solid;
+    padding: 0.5em 9em;
+    margin: 0.5em;
+    font-size: 1.0em;
+    cursor: pointer;
+    border-radius: 30px;
+    outline: 0;
+    transition: all .7s ease-in-out;
+    &:hover {
+        transform: translateY(-5px);
+        background-color: #14274E;
+        color: #E0E0E0;
+        border-color: #14274E;
+
+    }
+  }
+
+.btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8%;
+    margin: 10%;    
+    height: 100vh;
+    /* background-color: #E0E0E0; */
+    border-radius: 10px ;
+    box-shadow: 0 0 15px 15px rgba(110, 110, 110, 0.3);
+}
+
+.labelInput { 
+    display:flex;
+    flex-direction: column;
+    margin: 4px 0;
+}
+    
+.inputUser{
+    padding: 8.5px;
+    border-radius: 5px;
+    border: 1.5px solid #86a7b0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.inputSelect{
+    border-radius: 5px;
+    border: 1.5px solid #86a7b0;
+}
+
+.bungee-regular {
+    font-family: "Bungee", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
+}
+
+.montserrat-font {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.open-sans-font {
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+}

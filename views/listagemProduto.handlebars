@@ -1,0 +1,50 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Chamar os arquivos externos -->
+    <link rel="stylesheet" type="text/css" href="css/listagem_produto.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+</head>
+
+<header>
+    <h1 class="bungee-regular">LISTA DE PRODUTOS</h1>
+    <div class="btn-container">
+        <a href="/" type="submit" ><button class="btn bungee-regular">Tela inicial</button></a>
+        <a href="/cadastroProduto" type="submit"><button class="btn bungee-regular">Cadastro de Produto</button></a>
+    </div> 
+</header>
+
+<table class="topo-tabela">
+    <thead>
+        <tr class="topo-linha montserrat-font">
+            <th>Código do Produto</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Valor de Compra</th>
+            <th>Valor de Venda (Bruto)</th>
+            <th>Quantidade</th>
+            <th>Opções</th>
+        </tr>
+    </thead>   
+    <tbody class="open-sans-font">
+{{#each posts}}
+            <tr>
+                <td>{{pk_produto}}</td>
+                <td>{{descricao_produto}}</td>
+                <td>{{categoria_produto}}</td>
+                <td>{{valor_compra_produto}}</td>
+                <td>{{valor_bruto_venda_produto}}</td>
+                <td>{{quantidade_produto}}</td>
+                <td class="opcao"><a href="/editar/{{pk_produto}}" id="editar"><button class="botao-editar"><i class="fa-solid fa-pencil-alt"></i></button></a>
+                <a href="/deletar/{{pk_produto}}" id="excluir"><button class="botao-excluir"><i class="fa-solid fa-trash-can"></i></button></a>
+                </td>
+            </tr>
+        {{/each}}            
+    </tbody>
+</table>
+
+<script src="https://kit.fontawesome.com/efb8d7431f.js" crossorigin="anonymous"></script>

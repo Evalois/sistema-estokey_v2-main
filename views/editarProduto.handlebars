@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTOKEY - Edição de Produto</title>
+
+    <!-- Chamar os arquivos externos -->
+    <link rel="stylesheet" type="text/css" href="/css/editar_produto.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="btn-container">
+        <a href="/" type="submit"><button class="btn bungee-regular">Tela inicial</button></a>
+        <a href="/consultaProduto" type="submit"><button class="btn bungee-regular">Consulta de Produtos</button></a>
+    </div> 
+<main>
+    <div class="box">
+        <!--HTML so aceita metodos POST e GET-->
+        <form action="/editar/{{produto.pk_produto}}?_method=PUT" method="POST">
+            <!-- Emular o PUT -->
+            <input type="hidden" name="_method" value="PUT"> 
+            <div class="formulario">
+
+                <h1 class="bungee-regular">Editar Produto</h1>
+                <br>
+                <div class="inputBox">
+                    <label for="descricao" class="labelInput montserrat-font">Descrição do Produto</label>
+                    <input type="text" name="descProduto" id="descricao" class="inputUser open-sans-font" value="{{produto.descricao_produto}}" required>
+                </div>
+                <br>
+                <div class="inputBox">
+                    <label for="categoria" class="labelInput montserrat-font">Categoria</label>
+                    <input type="text" name="catProduto" id="categoria" class="inputUser open-sans-font" value="{{produto.categoria_produto}}" required>
+                </div>     
+                <br>
+                <div class="inputBox">
+                    <label for="valorCompra" class="labelInput montserrat-font">Valor de Compra</label>
+                    <input type="number" name="valorCompraProduto" id="valorCompra" class="inputUser open-sans-font" value="{{produto.valor_compra_produto}}" required>
+                </div> 
+                <br>
+                <div class="inputBox">
+                    <label for="valorBruto" class="labelInput montserrat-font">Valor de Venda (Bruto)</label>
+                    <input type="text" name="valorBrutoVendaProduto" id="valorBruto" class="inputUser open-sans-font" value="{{produto.valor_bruto_venda_produto}}" required>
+                </div>
+                <br>
+                <div class="inputBox">
+                    <label for="qtdeProduto" class="labelInput montserrat-font">Quantidade</label>
+                  <input type="number" name="quantidade_produto" id="qtdeProduto" class="inputUser open-sans-font" value="{{produto.quantidade_produto}}" min="0" required>
+                <br><br>
+                <input type="submit" name="submit" class="btn bungee-regular" value="Atualizar Produto"> 
+                  
+            </div> 
+        </form>
+    </div>
+          
+</main>
+</body>
+</html>

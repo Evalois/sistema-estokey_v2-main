@@ -6,6 +6,7 @@
     "start": "node seed.js && node index.js"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@tensorflow/tfjs-node": "^4.22.0",
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
